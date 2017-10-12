@@ -11,7 +11,7 @@ public class Game {
     private char turn; // who's turn is it, 'x' or 'o' ? x always starts
     private boolean twoPlayer; // true if this is a 2 player game, false if AI playing
     private char [][] grid; // a 2D array of chars representing the game grid
-    private int freeSpots; // counts the number of empty spots remaining on the board (starts from 9  and counts down)
+    private int freeSpots; // counts the number of empty spots remaining on the board (starts from 9 and counts down)
     private static GameUI gui;
 
     /**
@@ -32,14 +32,17 @@ public class Game {
 
         // initialize all chars in 3x3 game grid to '-'
         grid = new char[3][3];
+
         //fill all empty slots with -
         for (int i=0; i<3; i++){
             for (int j=0; j<3; j++){
                 grid[i][j] = '-';
             }
         }
+
         //start with 9 free spots and decrement by one every time a spot is taken
         freeSpots = 9;
+
         //x always starts
         turn = 'x';
     }
@@ -58,6 +61,7 @@ public class Game {
     public char gridAt(int i, int j){
         if(i>=3||j>=3||i<0||j<0)
             return '!';
+
         return grid[i][j];
     }
 
@@ -72,14 +76,18 @@ public class Game {
         //check for index boundries
         if(i>=3||j>=3||i<0||j<0)
             return false;
+
         //check if this position is available
         if(grid[i][j] != '-'){
             return false; //bail out if not available
         }
+
         //update grid with new play based on who's turn it is
         grid[i][j] = turn;
+
         //update free spots
         freeSpots--;
+
         return true;
     }
 
@@ -99,11 +107,13 @@ public class Game {
     public boolean doChecks() {
         //check if there's a winner or tie ?
         String winnerMessage = checkGameWinner(grid);
+
         if (!winnerMessage.equals("None")) {
             gui.gameOver(winnerMessage);
             newGame(false);
             return true;
         }
+
         return false;
     }
 
@@ -112,18 +122,21 @@ public class Game {
      */
     public void nextTurn(){
         //check if single player game, then let computer play turn
-        if(!twoPlayer){
-            if(freeSpots == 0){
-                return ; //bail out if no more free spots
+        if(!twoPlayer) {
+            if(freeSpots == 0) {
+                return; //bail out if no more free spots
             }
+
             int ai_i, ai_j;
             do {
                 //randomly pick a position (ai_i,ai_j)
                 ai_i = (int) (Math.random() * 3);
                 ai_j = (int) (Math.random() * 3);
-            }while(grid[ai_i][ai_j] != '-'); //keep trying if this spot was taken
+            } while(grid[ai_i][ai_j] != '-'); //keep trying if this spot was taken
+
             //update grid with new play, computer is always o
             grid[ai_i][ai_j] = 'o';
+
             //update free spots
             freeSpots--;
         }
@@ -136,7 +149,6 @@ public class Game {
                 turn = 'x';
             }
         }
-        return;
     }
 
 
@@ -148,10 +160,104 @@ public class Game {
      * @param grid 2D array of characters representing the game board
      * @return String indicating the outcome of the game: "X wins" or "O wins" or "Tie" or "None"
      */
-    public String checkGameWinner(char [][]grid){
-        String result = "None";
-        //Student code goes here ...
-        return result;
+    public String checkGameWinner(char[][] grid){
+        // first index in grid is the column
+        // second index in grid is the line
+
+        String[] players = { "x", "o" };
+
+        //vertically
+            // first column
+            //grid[0][0]
+            //grid[0][1]
+            //grid[0][2]
+
+            // second column
+            //grid[1][0]
+            //grid[1][1]
+            //grid[1][2]
+
+            // third column
+            //grid[2][0]
+            //grid[2][1]
+            //grid[2][2]
+
+        // horizontally
+            // first line
+            //grid[0][0]
+            //grid[1][0]
+            //gird[2][0]
+
+            // second line
+            //grid[0][1]
+            //grid[1][1]
+            //grid[2][1]
+
+            // third line
+            //grid[0][2]
+            //grid[1][2]
+            //grid[2][2]
+
+        // diagonally
+            // main
+            //grid[0][0]
+            //grid[1][1]
+            //grid[2][2]
+
+            // secondary
+            // grid[2][0]
+            // grid[1][1]
+            // grid[0][2]
+
+        int[] mainDiagonalMatch = { 0, 0 };
+        int[] secondaryDiagonalMatch = { 0, 0 };
+        int n = grid.length;
+
+        // vertical iteration (from first column (index 0) downwards for each line (index 0 to 2) to third column (index 2))
+        for (int column = 0; column < 3; column++) {
+            for (int playerId = 0; playerId < 2; playerId++) {
+                int verticalMatch = 0;
+                int horizontalMatch = 0;
+                String player = players[playerId];
+
+                for (int line = 0; line < 3; line++) {
+
+                    char vertical = grid[column][line];
+
+                    // main diagonal
+                    if (column == line && vertical == player.charAt(0)) {
+                        mainDiagonalMatch[playerId]++;
+                    }
+
+                    // secondary diagonal
+                    if(column == n - line - 1 && vertical == player.charAt(0)) {
+                        secondaryDiagonalMatch[playerId]++;
+                    }
+
+                    // horizontal
+                    char horizontal = grid[line][column];
+                    if (horizontal == player.charAt(0)) {
+                        horizontalMatch++;
+                    }
+
+                    // vertical
+                    if (vertical == player.charAt(0)) {
+                        verticalMatch++;
+                    }
+                }
+
+                if (verticalMatch == 3 || horizontalMatch == 3
+                        || mainDiagonalMatch[0] == 3 || mainDiagonalMatch[1] == 3
+                        || secondaryDiagonalMatch[0] == 3 || secondaryDiagonalMatch[1] == 3) {
+                    return player.toUpperCase() + " wins";
+                }
+            }
+        }
+
+        if (freeSpots == 0)
+            return "Tie";
+
+        return "None";
     }
 
     /**
@@ -163,4 +269,7 @@ public class Game {
         gui = new GameUI(game);
     }
 
+    public void setFreeSpots(int freeSpots) {
+        this.freeSpots = freeSpots;
+    }
 }

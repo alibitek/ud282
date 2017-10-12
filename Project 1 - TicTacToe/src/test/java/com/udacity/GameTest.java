@@ -163,6 +163,7 @@ public class GameTest {
         char[][] grid2 = {  {'o', 'x', 'o'},
                             {'x', 'o', 'x'},
                             {'x', 'o', 'x'}};
+        game.setFreeSpots(0);
         assertTrue("tie game failed", game.checkGameWinner(grid2).equalsIgnoreCase("tie"));
     }
 
@@ -172,6 +173,7 @@ public class GameTest {
         char[][] grid2 = {  {'o', 'x', 'o'},
                             {'o', 'x', 'x'},
                             {'x', 'o', 'x'}};
+        game.setFreeSpots(0);
         assertTrue("tie game failed", game.checkGameWinner(grid2).equalsIgnoreCase("tie"));
     }
 
@@ -181,6 +183,7 @@ public class GameTest {
         char[][] grid2 = {  {'x', 'o', 'o'},
                             {'o', 'x', 'x'},
                             {'x', 'o', 'o'}};
+        game.setFreeSpots(0);
         assertTrue( "tie game failed", game.checkGameWinner(grid2).equalsIgnoreCase("tie"));
     }
 
